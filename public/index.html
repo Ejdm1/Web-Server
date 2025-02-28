@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Relay Control</title>
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const socket = io();
+
+    function toggleLight() {
+      socket.emit('light', 0);
+    }
+    
+    function reboot() {
+      var confirmation = confirm("Do you really want to reboot raspberry?");
+      socket.emit('reboot', confirmation);
+    }
+    
+    socket.on('cpuU', (data) => {
+      document.getElementById("cpu").textContent = "Cpu U: \n" + data.toFixed(2) + "%";
+    });
+    
+    socket.on('memU', (data) => {
+      document.getElementById("mem").textContent = "Mem U: \n" + data + "%";
+    });
+    
+    socket.on('temp', (data) => {
+      document.getElementById("temp").textContent = "Cpu T: \n" + data.toFixed(2) + "°C";
+    });
+    
+    socket.on('time', (data) => {
+      document.getElementById("time").textContent = data;
+    });
+    
+    socket.on('outStatus', (data) => {
+      if(data == 0) {
+        document.getElementById("outStatus").textContent = "PC is OFF";
+        document.getElementById("outStatus").style.backgroundColor = "#FF0300";
+      }
+      else if(data == 1) {
+        document.getElementById("outStatus").textContent = "PC is ON";
+        document.getElementById("outStatus").style.backgroundColor = "#19FF00"  
+      }
+      else if(data == 2) {
+        document.getElementById("outStatus").textContent = "Turning off";
+        document.getElementById("outStatus").style.backgroundColor = "lightgray"; 
+      }
+      else if(data == 3) {
+        document.getElementById("outStatus").textContent = "Turning on";
+        document.getElementById("outStatus").style.backgroundColor = "lightgray";  
+      }
+    });
+    
+    socket.on('roomTemp', (data) => {
+      document.getElementById("roomTemp").textContent = "Room T: \n" + data.toFixed(2) + "°C";
+    });
+    
+    socket.on('roomHumid', (data) => {
+      document.getElementById("roomHumid").textContent = "Room H: \n" + data.toFixed(2) + "%";
+    });
+  </script>
+  <style>
+    .button {
+      background: gray;
+      border: none;
+      color: black;
+      padding: 0px 32px;
+      text-decoration: none;
+      font-size: 20px;
+      margin: 4px 2px;
+      cursor: pointer;
+      font-family: helverica;
+      width: 1px;
+      flex-grow: 1;
+    }
+    .button:active {
+      border: 2px solid #19FF00;
+    }
+    .p {
+      background: lightgray;
+      border: none;
+      color: black;
+      padding: 0px 24px;
+      text-decoration: none;
+      font-size: 18px;
+      margin: 4px 2px;
+      font-family: helverica;
+      width: 85px;
+    }
+    .h1 {
+      width: 1px;
+      flex-grow: 1;
+      background: lightgray;
+      border: none;
+      color: black;
+      padding: 0px 24px;
+      text-decoration: none;
+      font-size: 20px;
+      margin: 4px 2px;
+      font-family: helverica;
+      font-weight: bold;
+      height: 22.5px;
+    }
+    .div1 {
+      background: lightgray;
+      display: flex;
+      text-align: center;
+    }
+    .div2 {
+      background: lightgray;
+      display: block;
+      text-align: center;
+      min-width: 150px;
+    }
+    .div3 {
+      background: lightgray;
+      display: flex-start;
+      text-align: center;
+    }
+    .div4 {
+      display: flex;
+      text-align: center;
+    }
+    .div5 {
+      display: flex;
+      text-align: center;
+      min-height: 180px;
+    }
+    .div6 {
+      display: flex;
+      text-align: center;
+      min-height: 60px;
+    }
+  </style>
+</head>
+<body>
+  <div class="div1">
+    <div class="div3">
+      <h1 class="h1">Computer control</h1><br>
+      <p id="time" class="p">Loading stats..</p><br>
+      <p id="roomTemp" class="p">Loading stats..</p><br>
+      <p id="roomHumid" class="p">Loading stats..</p><br>
+    </div>
+    <div class="div2">
+      <div class="div4"><p id="outStatus" class="h1">Loading..</p><br></div>
+      <div class="div5"><button id="buttonSW" onclick="toggleLight()" class="button">Power<br>button</button><br></div>
+      <div class="div6"><button id="buttonReboot" onclick="reboot()" class="button">Reboot<br>raspberry</button><br></div>
+    </div>
+    <div class="div3">
+      <h1 class="h1">Raspberry stats</h1><br>
+      <p id="temp" class="p">Loading stats..</p><br>
+      <p id="mem" class="p">Loading stats..</p><br>
+      <p id="cpu" class="p">Loading stats..</p><br>
+    </div>
+  </div>
+</body>
+</html>
